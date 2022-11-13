@@ -14,12 +14,15 @@ struct Course: Hashable, Codable {
 }
 
 class ViewModel: ObservableObject {
+    @Published var courses: [Course] = [] // to update every time the API data changes
+    
     func fetchAPI(){
         guard let url = URL(string: "https://iosacademy.io/api/v1/courses/index.php")
         else {
             return
         }
-        let task = URLSession.shared.dataTask(with: url) {
+        // weak self = prevent memory leak
+        let task = URLSession.shared.dataTask(with: url) { [weak self]
             data, _, error in
             guard let data = data, error == nil else {
                 return
@@ -28,6 +31,9 @@ class ViewModel: ObservableObject {
             // decode JSON
             do {
                 let courses = try JSONDecoder().decode([Course].self, from: data)
+                DispatchQueue.main.async {
+                    self?.courses = courses
+                }
             }
             // if error occurs
             catch {
@@ -35,10 +41,13 @@ class ViewModel: ObservableObject {
                 
             }
         }
+        task.resume()
     }
 }
 
 struct ContentView: View {
+    
+    
     var body: some View {
         NavigationView {
             List {
