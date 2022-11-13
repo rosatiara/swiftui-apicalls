@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+struct Course: Hashable, Codable {
+    // api data objects
+    let name: String
+    let image: String
+}
+
 class ViewModel: ObservableObject {
     func fetchAPI(){
         guard let url = URL(string: "https://iosacademy.io/api/v1/courses/index.php")
@@ -17,6 +23,16 @@ class ViewModel: ObservableObject {
             data, _, error in
             guard let data = data, error == nil else {
                 return
+            }
+            
+            // decode JSON
+            do {
+                let courses = try JSONDecoder().decode([Course].self, from: data)
+            }
+            // if error occurs
+            catch {
+                print(error)
+                
             }
         }
     }
