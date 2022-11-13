@@ -7,10 +7,28 @@
 
 import SwiftUI
 
+class ViewModel: ObservableObject {
+    func fetchAPI(){
+        guard let url = URL(string: "https://iosacademy.io/api/v1/courses/index.php")
+        else {
+            return
+        }
+        let task = URLSession.shared.dataTask(with: url) {
+            data, _, error in
+            guard let data = data, error == nil else {
+                return
+            }
+        }
+    }
+}
+
 struct ContentView: View {
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        NavigationView {
+            List {
+                
+            }.navigationTitle("Courses")
+        }
     }
 }
 
